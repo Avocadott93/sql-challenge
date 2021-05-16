@@ -79,82 +79,75 @@ FROM "Dept_Emply";
 
 --Data Analysis
 
--- View employees information
-SELECT Employees.emp_no, Employees.first_name, Employees.last_name, Employees.sex, Salary.salary
-FROM "Employees", 
-INNER JOIN "Salary" ON
-Employees.emp_no=Salary.emp_no;
+-- List the following details of each employee: employee number, last name, first name, sex, and salary.
+SELECT emp.emp_no, emp.first_name, emp.last_name, emp.sex, sa.salary
+FROM "Employees" emp 
+INNER JOIN "Salary" sa ON
+emp.emp_no=sa.emp_no;
 
--- Employees hired in 1986
-SELECT Employees.first_name, Employees.last_name, Employees.hire_date
-FROM "Employees"
-WHERE Employees.hire_date = 1986;
+-- Show employees hired in 1986
+SELECT emp.first_name, emp.last_name, emp.hire_date
+FROM "Employees" emp
+WHERE emp.hire_date BETWEEN '1986-01-01' AND '1986-12-31';
 
 -- List the manager of each department with the following information: department number, department name, 
 -- the manager's employee number, last name, first name.
 
-SELECT Employees.emp_no, Employees.last_name, Employees.first_name, Departments.dept_no, Departments.dept_name
-FROM "Employees"
-LEFT JOIN "Manager"
-ON Employees.emp_no = Manager.emp_no
-LEFT JOIN "Departments"
-ON Manager.dept_no = Departments.dept_no;
+SELECT emp.emp_no, emp.last_name, emp.first_name, dep.dept_no, dep.dept_name
+FROM "Employees" emp
+LEFT JOIN "Manager" ma
+ON emp.emp_no = ma.emp_no
+LEFT JOIN "Departments" dep
+ON ma.dept_no = dep.dept_no;
 
 -- List the department of each employee with the following information: employee number, 
 -- last name, first name, and department name.
 
-SELECT Employees.emp_no, Employees.last_name, Employees.first_name, Dept_Emply.dept_name
-FROM "Employees"
-JOIN "Dept_Emply"
-ON Employees.emp_no = Dept_Emply.emp_no
+SELECT emp.emp_no, emp.last_name, emp.first_name, dep.dept_name
+FROM "Employees" emp 
+LEFT JOIN "Dept_Emply" dem
+ON emp.emp_no = dem.emp_no
+LEFT JOIN "Departments" dep
+ON dem.dept_no = dep.dept_no
 
 -- List first name, last name, and sex for employees whose first name 
 --is "Hercules" and last names begin with "B."
 
-SELECT Employees.first_name, Employees.last_name, Employees.sex
-FROM "Employees"
-WHERE Employees.last_name like 'B_%'
+SELECT emp.first_name, emp.last_name, emp.sex
+FROM "Employees" emp
+WHERE emp.first_name = 'Hercules' AND emp.last_name like 'B_%'
 
 -- List all employees in the Sales department, including their employee number, 
 --last name, first name, and department name.
-SELECT Employees.emp_no, Employees.last_name, Employees.first_name, Departments.dept_name
-FROM "Employees"
-JOIN "Departments"
-WHERE Departments.dept_name = "Sales"
+SELECT emp.emp_no, emp.last_name, emp.first_name, dep.dept_name
+FROM "Employees" emp
+LEFT JOIN "Dept_Emply" dem
+ON emp.emp_no = dem.emp_no
+LEFT JOIN "Departments" dep
+ON dem.dept_no = dep.dept_no
+WHERE dep.dept_name = 'Sales'
 
 
 -- List all employees in the Sales and Development departments, 
 -- including their employee number, last name, first name, and department name.
-SELECT Employees.emp_no, Employees.last_name, Employees.first_name, Departments.dept_name
-FROM "Employees"
-JOIN "Departments"
-WHERE Departments.dept_name = "Sales" 
-OR Departments.dept_name = "Development"
+SELECT emp.emp_no, emp.last_name, emp.first_name, dep.dept_name
+FROM "Employees" emp
+LEFT JOIN "Dept_Emply" dem
+ON emp.emp_no = dem.emp_no
+LEFT JOIN "Departments" dep
+ON dem.dept_no = dep.dept_no
+WHERE dep.dept_name = 'Sales' OR dep.dept_name = 'Development'
 
 --In descending order, list the frequency count of employee last names, 
 -- i.e., how many employees share each last name.
 
-SELECT "Employees.last_name" as name,
-COUNT(name)
-FROM "Employees",
-GROUP BY name
-ORDER BY 
-COUNT(name) DESC
+SELECT last_name, 
+COUNT(last_name) AS "frequency" 
+FROM "Employees" emp
+GROUP BY last_name
+ORDER BY
+COUNT(last_name) DESC;
 
-
-
--- -- Order by descending values
-SELECT rental_rate, ROUND(AVG(length),2) AS "avg length"
-FROM film
-GROUP BY rental_rate
-ORDER BY "avg length" DESC;
-
-
-----
---SELECT players.first_name, players.last_name, players.hand, matches.loser_rank
---FROM matches
---INNER JOIN players ON
---players.player_id=matches.loser_id;
 
 ----
 ALTER TABLE "Employees" ADD CONSTRAINT "fk_Employees_emp_title_id" FOREIGN KEY("emp_title_id")
